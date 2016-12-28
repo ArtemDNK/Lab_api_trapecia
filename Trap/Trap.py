@@ -1,52 +1,57 @@
-
 import units
 
 def createMyFeature(ag):
-    ExtAPI.CreateFeature("BoxFeature")
+    AA = ExtAPI.CreateFeature("OctaFeature")
 
-def generateBoxGeometry(feature,fct):
-	ExtAPI.Log.WriteMessage("Generating MyFeature...")
+def generateOctagonGeom(feature,fct):
+
+    # This command writes messages to log file...
+	ExtAPI.Log.WriteMessage("Generating MyFeature...")    
     
     # Collect all property values in meter unit
 	fromUnit, toUnit = ExtAPI.DataModel.CurrentUnitFromQuantityName("Length"), "m"
     
-    #Get Length width and Thickness of the Box
-	LowEdge = units.ConvertUnit(feature.Properties["LowEdge"].Value, fromUnit, toUnit)
-	HighEdge = units.ConvertUnit(feature.Properties["HighEdge"].Value, fromUnit, toUnit)
-	High = units.ConvertUnit(feature.Properties["High"].Value, fromUnit, toUnit)
-	Sdvig = units.ConvertUnit(feature.Properties["Sdvig"].Value, fromUnit, toUnit)
+    # Get span of the Octagon from "Span" property and convert it to present unit system
+	Niz = units.ConvertUnit(feature.Properties["Niz"].Value, fromUnit, toUnit)
+	Ver = units.ConvertUnit(feature.Properties["Ver"].Value, fromUnit, toUnit)
+	Sdvid = units.ConvertUnit(feature.Properties["Sdvid"].Value, fromUnit, toUnit)
+	H = units.ConvertUnit(feature.Properties["H"].Value, fromUnit, toUnit)
 	Width = units.ConvertUnit(feature.Properties["Width"].Value, fromUnit, toUnit)
+	Radius = units.ConvertUnit(feature.Properties["Radius"].Value, fromUnit, toUnit)
     
-	ExtAPI.Log.WriteMessage(LowEdge.ToString())
-	ExtAPI.Log.WriteMessage(HighEdge.ToString())
-	ExtAPI.Log.WriteMessage(High.ToString())
-	ExtAPI.Log.WriteMessage(Sdvig.ToString())
-	ExtAPI.Log.WriteMessage(Width.ToString())
-	
+    # Calculate side length of octagon
 	x1=0.
 	y1=0.
-	x2=Sdvig
-	y2=High
-	x3=Sdvig+LowEdge
-	y3=High
-	x4=HighEdge
+	x2=Sdvid
+	y2=H
+	x3=Sdvid+Ver
+	y3=H
+	x4=Niz
 	y4=0.
     
+    # Declare variables...
 	bodies=[]
+	bodies1=[]
+	bodies2=[]
 	builder = ExtAPI.DataModel.GeometryBuilder
-	points_list = [0.,0.,0., Sdvig,High,0., Sdvig+LowEdge,High,0., HighEdge,0.,0.]
-        #Creating Box
-	length = Sdvig
-	bodies = []
-	builder = ExtAPI.DataModel.GeometryBuilder
-	polygon=builder.Primitives.Sheet.CreatePolygon(points_list)
-	polygon_generated = polygon.Generate()
+        
+	ExtAPI.Log.WriteMessage("Operations.Extrude")
+	polGen = builder.Primitives.Sheet.CreatePolygon([x1,y1,0.,x2,y2,0.,x3,y3,0.,x4,y4,0.])
+	bPol = polGen.Generate()
 	extrude = builder.Operations.CreateExtrudeOperation([0.,0.,1.],Width)
-	bodies.Add(extrude.ApplyTo(polygon_generated)[0])
+	bodies = extrude.ApplyTo(bPol)
 	feature.Bodies = bodies
-	feature.MaterialType = MaterialTypeEnum.Add
-
-	feature.Bodies = bodies
+	
+	primitive = ExtAPI.DataModel.GeometryBuilder.Primitives
+	cylinder = primitive.Solid.CreateCylinder([Niz/2.,H/2.,0.],[0.,0.,Width],Radius)
+	bCyl1 = cylinder.Generate()
+	bodies1.Add(bCyl1)
+	feature.Bodies = bodies1
+	feature.MaterialType = MaterialTypeEnum.Freeze
+	
+	extrudeOperation = builder.Operations.CreateSubtractOperation(bodies1)
+	bodies2 = extrudeOperation.ApplyTo(bodies)
+	feature.Bodies = bodies2
 	feature.MaterialType = MaterialTypeEnum.Freeze
 
 	return True

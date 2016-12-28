@@ -1,5 +1,5 @@
 <!--
-Goal of this extension: To use external defined modules and create parameteric box...
+Goal of this extension: To use external defined modules and create octagon shape body using extrude, revolve and unite commands...
 
 Main contents:
     1. One XML file with one ACT object to create tree object.
@@ -11,7 +11,7 @@ Documentation References:
 	3. API's Discription > IDesignMOdelerDataModel > GeometryBuilder in HTML Reference's guide
 
 Usage instructions:
-    1. Copy this XML and the folder (DMExample3) to %appdata%\Ansys\v145\AdvancedAddinPackage\extension.
+    1. Copy this XML and the folder (Trap) to %appdata%\Ansys\v145\AdvancedAddinPackage\extension.
     2. Open the Workbench R15.
     3. Turn on the Beta options under Tools >> Options >> Appearance
 	4. Load the extension
@@ -20,32 +20,33 @@ Usage instructions:
 
 <extension version="1" name="Trap">
 	
-	<guid shortid="BOX_Extension">3e7f7582-a4bf-48b4-a78c-a56ec677efe7</guid>
+	<guid shortid="Trap">7e94a44c-4a43-40e1-ba67-b1ce8100778e</guid>
 	
 	<script src="Trap.py" />
 	
 	<interface context="DesignModeler">
 		<images>images</images>
-		<toolbar name="BOX_Extension" caption="Box Extension">
-			<entry name="BOX"  icon="box">
-			<callbacks>
-				<onclick>createMyFeature</onclick>
-			</callbacks>
+		
+		<toolbar name="Trap" caption="Trap">
+			<entry name="Create Octagon"  icon="box3">
+				<callbacks>
+					<onclick>createMyFeature</onclick>
+				</callbacks>
 			</entry>
 		</toolbar>
 	</interface>
 
 	<simdata context="DesignModeler">
-		<geometry name="BoxFeature" caption="Box" icon="box" version="1">
+		<geometry name="OctaFeature" caption="OctaFeature" icon="box3" version="1">
 			<callbacks>
-				<ongenerate>generateBoxGeometry</ongenerate>
+				<ongenerate>generateOctagonGeom</ongenerate>
 			</callbacks>
-			<!-- property Length can be defined as WB parameter here by adding attribute isparameter -->
-			<property name="LowEdge" caption="LowEdge" unit="Length" control="float" default="0.5[m]" isparameter="true"></property>
-			<property name="HighEdge" caption="HighEdge" unit="Length" control="float" default="1 [m]" ></property> 
-			<property name="High" caption="High" unit="Length" control="float" default="0.5[m]" ></property>		
-			<property name="Sdvig" caption="Sdvig" unit="Length" control="float" default="0.25[m]" ></property>
-			<property name="Width" caption="Width" unit="Length" control="float" default="1[m]" ></property>
+			<property name="Niz" caption="Niz" unit="Length" control="float" default="1 [m]"></property>
+			<property name="Ver" caption="Ver" unit="Length" control="float" default="0.5 [m]"></property>
+			<property name="Sdvid" caption="Sdvid" unit="Length" control="float" default="0.25 [m]"></property>
+			<property name="H" caption="H" unit="Length" control="float" default="0.5 [m]"></property>
+			<property name="Width" caption="Width" unit="Length" control="float" default="0.5 [m]"></property>
+			<property name="Radius" caption="Radius" unit="Length" control="float" default="0.05 [m]"></property>
 		</geometry>
 	</simdata>
 
